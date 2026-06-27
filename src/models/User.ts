@@ -23,16 +23,6 @@ const userSchema = new Schema(
       default: false,
     },
     
-//     name: {
-//   type: String,
-//   default: ""
-// },
-
-// email: {
-//   type: String,
-//   default: ""
-// },
-
  name: String,
 
  email: {
@@ -67,7 +57,12 @@ userId: {
 role: {
   type: String,
   default: "user"
-}
+},
+
+profileImage: {
+  type: String,
+  default: "",
+},
 
   },
   {

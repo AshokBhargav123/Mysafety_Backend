@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-     "dev": "nodemon src/server.ts",
+    "dev": "nodemon src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js"
   },
@@ -19,7 +19,8 @@
     "helmet": "8.2.0",
     "jsonwebtoken": "9.0.3",
     "mongoose": "9.7.1",
-    "morgan": "1.11.0"
+    "morgan": "1.11.0",
+    "multer": "2.2.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "2.4.6",
@@ -27,6 +28,7 @@
     "@types/express": "5.0.6",
     "@types/jsonwebtoken": "9.0.10",
     "@types/morgan": "1.9.10",
+    "@types/multer": "2.1.0",
     "@types/node": "26.0.0",
     "nodemon": "3.1.14",
     "ts-node": "10.9.2",

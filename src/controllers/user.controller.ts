@@ -9,9 +9,16 @@ export const completeProfile = async (
   try {
     const userId = (req as any).user.id;
 
+    const body = {
+      ...req.body,
+      profileImage: req.file
+        ? `/uploads/profile/${req.file.filename}`
+        : undefined,
+    };
+
     const user = await completeProfileService(
       userId,
-      req.body
+      body
     );
 
     return res.status(200).json({

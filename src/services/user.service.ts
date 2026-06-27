@@ -14,6 +14,11 @@ export const completeProfileService = async (
   user.email = data.email;
   user.language = data.language;
 
+  if (data.profileImage) {
+    user.profileImage = data.profileImage;
+  }
+
+
   user.address = {
     fullAddress: data.address?.fullAddress,
     pincode: data.address?.pincode,
