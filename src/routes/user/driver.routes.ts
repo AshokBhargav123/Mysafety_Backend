@@ -6,6 +6,7 @@ import {
   getDriver,
   updateDriver,
   deleteDriver,
+  getDriverDetails,
 } from "../../controllers/driver.controller";
 
 import { authMiddleware } from "../../middlewares/auth.middleware";
@@ -40,6 +41,12 @@ router.delete(
   "/drivers/:id",
   authMiddleware,
   deleteDriver
+);
+
+router.get(
+  "/drivers/:id",
+  authMiddleware,
+  getDriverDetails
 );
 
 export default router;
