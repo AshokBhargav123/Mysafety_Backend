@@ -94,3 +94,19 @@ export const deleteDriverService = async (
 
   return true;
 };
+
+export const getDriverDetailsService = async (
+  userId: string,
+  id: string
+) => {
+  const driver = await Driver.findOne({
+    _id: id,
+    userId,
+  });
+
+  if (!driver) {
+    throw new Error("Driver not found");
+  }
+
+  return driver;
+};

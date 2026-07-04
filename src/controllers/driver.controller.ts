@@ -9,6 +9,7 @@ import {
   getDriverService,
   updateDriverService,
   deleteDriverService,
+  getDriverDetailsService,
 } from "../services/driver.service";
 
 export const addDriver = async (
@@ -134,6 +135,32 @@ export const deleteDriver = async (
       success: true,
       message:
         "Driver deleted successfully",
+    });
+  } catch (error: any) {
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const getDriverDetails = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const userId = (req as any).user.id;
+    const id = req.params.id as string;
+
+    const driver = await getDriverDetailsService(
+      userId,
+      id
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Driver details fetched successfully",
+      data: driver,
     });
   } catch (error: any) {
     return res.status(400).json({
