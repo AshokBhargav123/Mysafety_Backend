@@ -8,6 +8,7 @@ import { uploadVehicleDocument } from "../../controllers/vehicleDocument.control
 import { getVehicleDocuments } from "../../controllers/vehicleDocument.controller";
 import { updateVehicleDocument } from "../../controllers/vehicleDocument.controller";
 import { deleteVehicleDocument } from "../../controllers/vehicleDocument.controller";
+import { getVehicleDocumentsByCategory } from "../../controllers/vehicleDocument.controller";
 
 const router = express.Router();
 
@@ -35,6 +36,12 @@ router.delete(
   "/vehicle/document/:id",
   authMiddleware,
   deleteVehicleDocument
+);
+
+router.post(
+  "/vehicle/document/category",
+  authMiddleware,
+  getVehicleDocumentsByCategory
 );
 
 export default router;

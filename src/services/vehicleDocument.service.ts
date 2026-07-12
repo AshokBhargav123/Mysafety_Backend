@@ -1,5 +1,8 @@
 import Vehicle from "../models/Vehicle";
 import VehicleDocument from "../models/VehicleDocument";
+import {
+  VehicleDocumentCategory,
+} from "../constants/vehicleDocument";
 
 export const uploadVehicleDocumentService =
   async (
@@ -145,4 +148,27 @@ export const deleteVehicleDocumentService = async (
   await VehicleDocument.findByIdAndDelete(id);
 
   return;
+};
+
+export const getVehicleDocumentsByCategoryService = async (
+  userId: string,
+  category: VehicleDocumentCategory
+) => {
+  const documents = await VehicleDocument.find({
+    userId,
+    category,
+  })
+    .populate("vehicleId", "vehicleNumber")
+    .sort({ createdAt: -1 });
+
+  return documents.map((doc: any) => ({
+    _id: doc._id,
+    vehicleId: doc.vehicleId?._id,
+    vehicleNumber: doc.vehicleNumber,
+    category: doc.category,
+    fileUrl: doc.document,
+    uploadMethod: doc.uploadMethod,
+    expiryDate: doc.expiryDate,
+    createdAt: doc.createdAt,
+  }));
 };

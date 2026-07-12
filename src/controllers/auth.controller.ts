@@ -12,16 +12,13 @@ export const sendOtp = async (
   try {
     const { mobile } = req.body;
 
-    await sendOtpService(mobile);
+  const data = await sendOtpService(mobile);
 
-    return res.status(200).json({
-      success: true,
-      message: "OTP sent successfully!",
-      data: {
-        phone: mobile,
-        
-      }
-    });
+return res.status(200).json({
+  success: true,
+  message: "OTP sent successfully!",
+  data,
+});
   } catch (error: any) {
     return res.status(500).json({
       success: false,

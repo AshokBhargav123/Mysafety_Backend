@@ -4,6 +4,8 @@ import { uploadVehicleDocumentService } from "../services/vehicleDocument.servic
 import { getVehicleDocumentsService } from "../services/vehicleDocument.service";
 import { updateVehicleDocumentService } from "../services/vehicleDocument.service";
 import { deleteVehicleDocumentService } from "../services/vehicleDocument.service";
+import { getVehicleDocumentsByCategoryService } from "../services/vehicleDocument.service";
+import { VehicleDocumentCategory } from "../constants/vehicleDocument";
 
 export const uploadVehicleDocument =
   async (
@@ -104,6 +106,31 @@ export const deleteVehicleDocument = async (
     return res.status(200).json({
       success: true,
       message: "Vehicle document deleted successfully",
+    });
+  } catch (error: any) {
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const getVehicleDocumentsByCategory = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const userId = (req as any).user.id;
+    const { category } = req.body;
+
+    const data = await getVehicleDocumentsByCategoryService(
+  userId,
+  category as VehicleDocumentCategory
+);
+    return res.status(200).json({
+      success: true,
+      message: `${category} documents fetched successfully`,
+      data,
     });
   } catch (error: any) {
     return res.status(400).json({

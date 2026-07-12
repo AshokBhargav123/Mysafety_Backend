@@ -8,6 +8,8 @@ import vehicleEmergencyContactRoutes from "./user/vehicleEmergencyContact.routes
 import houseRoutes from "./user/house.routes";
 import vehicle from "./user/vehicle.routes";
 import vehicleDocumentRoutes from "./user/vehicleDocument.routes";
+import predefinedMessage from "./user/predefinedMessage.routes";
+
 
 const router = Router();
 
@@ -19,5 +21,6 @@ router.use("/", vehicleEmergencyContactRoutes);
 router.use("/", houseRoutes);
 router.use("/", vehicle);
 router.use("/", vehicleDocumentRoutes);
+router.use("/",predefinedMessage);
 
 export default router;
