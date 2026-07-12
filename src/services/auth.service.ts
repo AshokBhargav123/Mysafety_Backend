@@ -27,9 +27,12 @@ if (!user) {
 
   await user.save();
 
-  console.log("OTP:", otp);
+console.log("OTP:", otp);
 
-  return true;
+return {
+  phone: mobile,
+  otp,
+};
 };
 
 
