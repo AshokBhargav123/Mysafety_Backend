@@ -9,6 +9,7 @@ import houseRoutes from "./user/house.routes";
 import vehicle from "./user/vehicle.routes";
 import vehicleDocumentRoutes from "./user/vehicleDocument.routes";
 import predefinedMessage from "./user/predefinedMessage.routes";
+import lostandFound from "./user/lostFound.routes";
 
 
 const router = Router();
@@ -22,5 +23,6 @@ router.use("/", houseRoutes);
 router.use("/", vehicle);
 router.use("/", vehicleDocumentRoutes);
 router.use("/",predefinedMessage);
+router.use("/",lostandFound);
 
 export default router;
