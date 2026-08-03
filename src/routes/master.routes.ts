@@ -10,6 +10,9 @@ import vehicle from "./user/vehicle.routes";
 import vehicleDocumentRoutes from "./user/vehicleDocument.routes";
 import predefinedMessage from "./user/predefinedMessage.routes";
 import lostandFound from "./user/lostFound.routes";
+import subscriptionPlanRoutes from "./user/subscriptionPlan.routes";
+import subscriptionRoutes from "./user/subscription.routes";
+import paymentRoutes from "./user/payment.routes";
 
 
 const router = Router();
@@ -24,5 +27,8 @@ router.use("/", vehicle);
 router.use("/", vehicleDocumentRoutes);
 router.use("/",predefinedMessage);
 router.use("/",lostandFound);
+router.use("/subscription-plans", subscriptionPlanRoutes);
+router.use("/subscription", subscriptionRoutes);
+router.use("/payment", paymentRoutes);
 
 export default router;
