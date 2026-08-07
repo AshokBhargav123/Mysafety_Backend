@@ -173,16 +173,34 @@ export class PaymentService {
   /**
    * Get Payment By Id
    */
+  // async getPaymentById(paymentId: string) {
+  //   const payment = await Payment.findById(paymentId)
+  //     .populate("planId");
+
+  //   if (!payment) {
+  //     throw new Error("Payment not found.");
+  //   }
+
+  //   return payment;
+  // }
+
   async getPaymentById(paymentId: string) {
-    const payment = await Payment.findById(paymentId)
-      .populate("planId");
+  const payment = await Payment.findById(paymentId)
+    .populate(
+      "planId",
+      "name description price currency duration features"
+    )
+    .populate(
+      "subscriptionId",
+      "status startDate endDate nextBillingDate autoRenew"
+    );
 
-    if (!payment) {
-      throw new Error("Payment not found.");
-    }
-
-    return payment;
+  if (!payment) {
+    throw new Error("Payment not found.");
   }
+
+  return payment;
+}
 
   /**
    * Update Payment Status
