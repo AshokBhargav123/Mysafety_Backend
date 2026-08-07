@@ -9,20 +9,41 @@ export class SubscriptionService {
   /**
    * Get Current Subscription
    */
+  // async getMySubscription(userId: string) {
+  //   const subscription = await Subscription.findOne({
+  //     userId,
+  //     status: "active",
+  //   })
+  //     .populate("planId")
+  //     .populate("paymentId");
+
+  //   if (!subscription) {
+  //     throw new Error("No active subscription found.");
+  //   }
+
+  //   return subscription;
+  // }
+
   async getMySubscription(userId: string) {
-    const subscription = await Subscription.findOne({
-      userId,
-      status: "active",
-    })
-      .populate("planId")
-      .populate("paymentId");
+  const subscription = await Subscription.findOne({
+    userId,
+    status: "active",
+  })
+    .populate(
+      "planId",
+      "name description price currency duration features"
+    )
+    .populate(
+      "paymentId",
+      "amount currency paymentMethod status paidAt razorpayPaymentId"
+    );
 
-    if (!subscription) {
-      throw new Error("No active subscription found.");
-    }
-
-    return subscription;
+  if (!subscription) {
+    throw new Error("No active subscription found.");
   }
+
+  return subscription;
+}
 
   /**
    * Get Available Subscription Plans

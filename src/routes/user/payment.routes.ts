@@ -24,4 +24,10 @@ router.get(
   paymentController.getPaymentHistory
 );
 
+router.get(
+  "/:id",
+  authMiddleware,
+  paymentController.getPaymentById
+);
+
 export default router;
