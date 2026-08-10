@@ -1,4 +1,5 @@
 import Driver from "../models/Driver";
+import { paginate } from "../utils/pagination";
 
 export const addDriverService = async (
   userId: string,
@@ -24,10 +25,34 @@ export const addDriverService = async (
   });
 };
 
+// export const getDriversService = async (
+//   userId: string
+// ) => {
+//   return Driver.find({ userId });
+// };
+
 export const getDriversService = async (
-  userId: string
+  userId: string,
+  page: number,
+  limit: number
 ) => {
-  return Driver.find({ userId });
+  return await paginate(
+    Driver,
+    {
+      userId,
+    },
+    {
+      page,
+      limit,
+
+      sort: {
+        createdAt: -1,
+      },
+
+      select:
+        "name mobile licenseNumber licenseFile createdAt updatedAt",
+    }
+  );
 };
 
 export const getDriverService = async (

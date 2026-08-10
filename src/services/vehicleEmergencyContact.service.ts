@@ -1,4 +1,5 @@
 import VehicleEmergencyContact from "../models/VehicleEmergencyContact";
+import { paginate } from "../utils/pagination";
 
 export const addVehicleEmergencyContactService = async (
   userId: string,
@@ -25,11 +26,33 @@ export const addVehicleEmergencyContactService = async (
   });
 };
 
+// export const getVehicleEmergencyContactsService =
+//   async (userId: string) => {
+//     return VehicleEmergencyContact.find({
+//       userId,
+//     });
+//   };
+
 export const getVehicleEmergencyContactsService =
-  async (userId: string) => {
-    return VehicleEmergencyContact.find({
-      userId,
-    });
+  async (
+    userId: string,
+    page: number,
+    limit: number
+  ) => {
+    return await paginate(
+      VehicleEmergencyContact,
+      {
+        userId,
+      },
+      {
+        page,
+        limit,
+
+        sort: {
+          createdAt: -1,
+        },
+      }
+    );
   };
 
 export const getVehicleEmergencyContactService =

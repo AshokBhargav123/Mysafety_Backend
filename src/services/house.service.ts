@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import house from "../models/house";
+import { paginate } from "../utils/pagination";
 
 export const addHouseService = async (
   userId: string,
@@ -28,10 +29,34 @@ export const addHouseService = async (
   });
 };
 
+// export const getHousesService = async (
+//   userId: string
+// ) => {
+//   return house.find({ userId });
+// };
+
 export const getHousesService = async (
-  userId: string
+  userId: string,
+  page: number,
+  limit: number
 ) => {
-  return house.find({ userId });
+  return await paginate(
+    house,
+    {
+      userId,
+    },
+    {
+      page,
+      limit,
+
+      sort: {
+        createdAt: -1,
+      },
+
+      select:
+        "houseName houseNumber apartment fullAddressUrl qrCode createdAt updatedAt",
+    }
+  );
 };
 
 export const getHouseService = async (

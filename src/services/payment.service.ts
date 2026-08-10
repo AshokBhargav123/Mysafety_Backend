@@ -1,6 +1,7 @@
 import { Payment } from "../models/payment.model";
 import { SubscriptionPlan } from "../models/subscriptionPlan.model";
 import { RazorpayService } from "./razorpay.service";
+import { paginate } from "../utils/pagination";
 
 export class PaymentService {
   private razorpayService = new RazorpayService();
@@ -46,52 +47,7 @@ export class PaymentService {
     };
   }
 
-  /**
-   * Verify Payment
-   */
-  // async verifyPayment(
-  //   razorpayOrderId: string,
-  //   razorpayPaymentId: string,
-  //   razorpaySignature: string
-  // ) {
-  //   const payment = await Payment.findOne({
-  //     razorpayOrderId,
-  //   });
-
-  //   if (!payment) {
-  //     throw new Error("Payment not found.");
-  //   }
-
-  //   const verified =
-  //     this.razorpayService.verifyPaymentSignature(
-  //       razorpayOrderId,
-  //       razorpayPaymentId,
-  //       razorpaySignature
-  //     );
-
-  //   if (!verified) {
-  //     payment.status = "failed";
-  //     await payment.save();
-
-  //     throw new Error("Invalid payment signature.");
-  //   }
-
-  //   const paymentDetails =
-  //     await this.razorpayService.fetchPayment(
-  //       razorpayPaymentId
-  //     );
-
-  //   payment.razorpayPaymentId = razorpayPaymentId;
-  //   payment.razorpaySignature = razorpaySignature;
-  //   payment.status = "success";
-  //   payment.gatewayResponse = paymentDetails;
-  //   payment.paidAt = new Date();
-
-  //   await payment.save();
-
-  //   return payment;
-  // }
-
+ 
   async verifyPayment(
   razorpayOrderId: string,
   razorpayPaymentId: string,
@@ -160,30 +116,48 @@ export class PaymentService {
   /**
    * Payment History
    */
-  async getPaymentHistory(userId: string) {
-    return await Payment.find({
+  // async getPaymentHistory(userId: string) {
+  //   return await Payment.find({
+  //     userId,
+  //   })
+  //     .populate("planId", "name price duration")
+  //     .sort({
+  //       createdAt: -1,
+  //     });
+  // }
+
+  async getPaymentHistory(
+  userId: string,
+  page: number,
+  limit: number
+) {
+  return await paginate(
+    Payment,
+    {
       userId,
-    })
-      .populate("planId", "name price duration")
-      .sort({
+    },
+    {
+      page,
+      limit,
+
+      sort: {
         createdAt: -1,
-      });
-  }
+      },
+
+      select:
+        "planId razorpayOrderId razorpayPaymentId amount currency paymentMethod status paidAt",
+
+      populate: {
+        path: "planId",
+        select: "name price duration",
+      },
+    }
+  );
+}
 
   /**
    * Get Payment By Id
    */
-  // async getPaymentById(paymentId: string) {
-  //   const payment = await Payment.findById(paymentId)
-  //     .populate("planId");
-
-  //   if (!payment) {
-  //     throw new Error("Payment not found.");
-  //   }
-
-  //   return payment;
-  // }
-
   async getPaymentById(paymentId: string) {
   const payment = await Payment.findById(paymentId)
     .populate(

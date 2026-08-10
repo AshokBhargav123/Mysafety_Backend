@@ -1,54 +1,6 @@
 import User from "../models/User";
 import FamilyMember from "../models/FamilyMember";
-
-// export const addFamilyMemberService = async (
-//   ownerId: string,
-//   mobile: string
-// ) => {
-
-//      console.log("ownerId:", ownerId);
-//   console.log("mobile:", mobile);
-
-//   const member = await User.findOne({
-//     mobile,
-//   });
-
-//     console.log("member:", member);
-
-//   if (!member) {
-//     throw new Error(
-//       "User not found with this mobile number"
-//     );
-//   }
-
-//   if (
-//     ownerId === member._id.toString()
-//   ) {
-//     throw new Error(
-//       "You cannot add yourself"
-//     );
-//   }
-
-//   const exists =
-//     await FamilyMember.findOne({
-//       ownerId,
-//       memberId: member._id,
-//     });
-
-//   if (exists) {
-//     throw new Error(
-//       "Family member already added"
-//     );
-//   }
-
-//   const familyMember =
-//     await FamilyMember.create({
-//       ownerId,
-//       memberId: member._id,
-//     });
-
-//   return familyMember;
-// };
+import { paginate } from "../utils/pagination";
 
 export const addFamilyMemberService = async (
   ownerId: string,
@@ -111,15 +63,41 @@ export const addFamilyMemberService = async (
   };
 };
 
-export const getFamilyMembersService =
-  async (ownerId: string) => {
-    return FamilyMember.find({
+// export const getFamilyMembersService =
+//   async (ownerId: string) => {
+//     return FamilyMember.find({
+//       ownerId,
+//     }).populate(
+//       "memberId",
+//       "name mobile address"
+//     );
+//   };
+
+export const getFamilyMembersService = async (
+  ownerId: string,
+  page: number,
+  limit: number
+) => {
+  return await paginate(
+    FamilyMember,
+    {
       ownerId,
-    }).populate(
-      "memberId",
-      "name mobile address"
-    );
-  };
+    },
+    {
+      page,
+      limit,
+
+      sort: {
+        createdAt: -1,
+      },
+
+      populate: {
+        path: "memberId",
+        select: "name mobile address",
+      },
+    }
+  );
+};
 
   export const updateFamilyMemberService =
   async (
