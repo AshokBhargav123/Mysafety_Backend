@@ -50,6 +50,29 @@ export const addDriver = async (
 }
 };
 
+// export const getDrivers = async (
+//   req: Request,
+//   res: Response
+// ) => {
+//   try {
+//     const userId = (req as any).user.id;
+
+//     const data =
+//       await getDriversService(userId);
+
+//     return res.status(200).json({
+//       success: true,
+//       message: "driver_list",
+//       data,
+//     });
+//   } catch (error: any) {
+//     return res.status(400).json({
+//       success: false,
+//       message: error.message,
+//     });
+//   }
+// };
+
 export const getDrivers = async (
   req: Request,
   res: Response
@@ -57,16 +80,27 @@ export const getDrivers = async (
   try {
     const userId = (req as any).user.id;
 
-    const data =
-      await getDriversService(userId);
+    const page =
+      Number(req.query.page) || 1;
+
+    const limit =
+      Number(req.query.limit) || 10;
+
+    const result =
+      await getDriversService(
+        userId,
+        page,
+        limit
+      );
 
     return res.status(200).json({
       success: true,
       message: "driver_list",
-      data,
+      data: result.data,
+      pagination: result.pagination,
     });
   } catch (error: any) {
-    return res.status(400).json({
+    return res.status(500).json({
       success: false,
       message: error.message,
     });

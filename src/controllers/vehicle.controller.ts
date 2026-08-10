@@ -126,6 +126,30 @@ export const createManualVehicle = async (
   }
 };
 
+// export const getVehicles = async (
+//   req: Request,
+//   res: Response
+// ) => {
+//   try {
+//     const userId = (req as any).user.id;
+
+//     const vehicles = await getVehiclesService(
+//       userId
+//     );
+
+//     return res.status(200).json({
+//       success: true,
+//       message: "Vehicle list fetched successfully",
+//       data: vehicles,
+//     });
+//   } catch (error: any) {
+//     return res.status(400).json({
+//       success: false,
+//       message: error.message,
+//     });
+//   }
+// };
+
 export const getVehicles = async (
   req: Request,
   res: Response
@@ -133,17 +157,27 @@ export const getVehicles = async (
   try {
     const userId = (req as any).user.id;
 
-    const vehicles = await getVehiclesService(
-      userId
-    );
+    const page =
+      Number(req.query.page) || 1;
+
+    const limit =
+      Number(req.query.limit) || 10;
+
+    const result =
+      await getVehiclesService(
+        userId,
+        page,
+        limit
+      );
 
     return res.status(200).json({
       success: true,
       message: "Vehicle list fetched successfully",
-      data: vehicles,
+      data: result.data,
+      pagination: result.pagination,
     });
   } catch (error: any) {
-    return res.status(400).json({
+    return res.status(500).json({
       success: false,
       message: error.message,
     });

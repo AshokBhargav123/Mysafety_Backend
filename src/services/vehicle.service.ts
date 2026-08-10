@@ -1,5 +1,6 @@
 import Vehicle from "../models/Vehicle";
 import Driver from "../models/Driver";
+import { paginate } from "../utils/pagination";
 
 const fetchVehicleFromThirdParty = async (
   vehicleNumber: string
@@ -123,21 +124,45 @@ export const createManualVehicleService = async (
   return vehicle;
 };
 
+// export const getVehiclesService = async (
+//   userId: string
+// ) => {
+//   return Vehicle.find({ userId })
+//     .select({
+//       vehicleNumber: 1,
+//       vehicleType: 1,
+//       brand: 1,
+//       model: 1,
+//       vehicleImage: 1,
+//       isManualEntry: 1,
+//       createdAt: 1,
+//       updatedAt: 1,
+//     })
+//     .sort({ createdAt: -1 });
+// };
+
 export const getVehiclesService = async (
-  userId: string
+  userId: string,
+  page: number,
+  limit: number
 ) => {
-  return Vehicle.find({ userId })
-    .select({
-      vehicleNumber: 1,
-      vehicleType: 1,
-      brand: 1,
-      model: 1,
-      vehicleImage: 1,
-      isManualEntry: 1,
-      createdAt: 1,
-      updatedAt: 1,
-    })
-    .sort({ createdAt: -1 });
+  return await paginate(
+    Vehicle,
+    {
+      userId,
+    },
+    {
+      page,
+      limit,
+
+      sort: {
+        createdAt: -1,
+      },
+
+      select:
+        "vehicleNumber vehicleType brand model vehicleImage isManualEntry createdAt updatedAt",
+    }
+  );
 };
 
 export const assignDriverService = async (

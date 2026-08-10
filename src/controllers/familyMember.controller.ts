@@ -44,31 +44,64 @@ export const addFamilyMember =
     }
   };
 
-export const getFamilyMembers =
-  async (
-    req: Request,
-    res: Response
-  ) => {
-    try {
-      const ownerId = (req as any)
-        .user.id;
+// export const getFamilyMembers =
+//   async (
+//     req: Request,
+//     res: Response
+//   ) => {
+//     try {
+//       const ownerId = (req as any)
+//         .user.id;
 
-      const data =
-        await getFamilyMembersService(
-          ownerId
-        );
+//       const data =
+//         await getFamilyMembersService(
+//           ownerId
+//         );
 
-      return res.status(200).json({
-        success: true,
-        data,
-      });
-    } catch (error: any) {
-      return res.status(400).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  };
+//       return res.status(200).json({
+//         success: true,
+//         data,
+//       });
+//     } catch (error: any) {
+//       return res.status(400).json({
+//         success: false,
+//         message: error.message,
+//       });
+//     }
+//   };
+
+export const getFamilyMembers = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const ownerId = (req as any).user.id;
+
+    const page =
+      Number(req.query.page) || 1;
+
+    const limit =
+      Number(req.query.limit) || 10;
+
+    const result =
+      await getFamilyMembersService(
+        ownerId,
+        page,
+        limit
+      );
+
+    return res.status(200).json({
+      success: true,
+      data: result.data,
+      pagination: result.pagination,
+    });
+  } catch (error: any) {
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
   export const updateFamilyMember = async (
   req: Request,

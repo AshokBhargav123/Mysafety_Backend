@@ -48,6 +48,28 @@ export const addHouse = async (
   }
 };
 
+// export const getHouses = async (
+//   req: Request,
+//   res: Response
+// ) => {
+//   try {
+//     const userId = (req as any).user.id;
+
+//     const data = await getHousesService(userId);
+
+//     return res.status(200).json({
+//       success: true,
+//       message: "House list fetched successfully",
+//       data,
+//     });
+//   } catch (error: any) {
+//     return res.status(400).json({
+//       success: false,
+//       message: error.message,
+//     });
+//   }
+// };
+
 export const getHouses = async (
   req: Request,
   res: Response
@@ -55,15 +77,27 @@ export const getHouses = async (
   try {
     const userId = (req as any).user.id;
 
-    const data = await getHousesService(userId);
+    const page =
+      Number(req.query.page) || 1;
+
+    const limit =
+      Number(req.query.limit) || 10;
+
+    const result =
+      await getHousesService(
+        userId,
+        page,
+        limit
+      );
 
     return res.status(200).json({
       success: true,
       message: "House list fetched successfully",
-      data,
+      data: result.data,
+      pagination: result.pagination,
     });
   } catch (error: any) {
-    return res.status(400).json({
+    return res.status(500).json({
       success: false,
       message: error.message,
     });

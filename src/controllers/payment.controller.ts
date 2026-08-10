@@ -89,31 +89,61 @@ export class PaymentController {
   /**
    * Get Payment History
    */
+  // getPaymentHistory = async (
+  //   req: AuthenticatedRequest,
+  //   res: Response
+  // ) => {
+  //   try {
+  //     const userId = req.user._id;
+
+  //     const payments =
+  //       await this.paymentService.getPaymentHistory(
+  //         userId
+  //       );
+
+  //     return res.status(200).json({
+  //       success: true,
+  //       message: "Payment history fetched successfully.",
+  //       data: payments,
+  //     });
+  //   } catch (error: any) {
+  //     return res.status(500).json({
+  //       success: false,
+  //       message: error.message,
+  //     });
+  //   }
+  // };
+
   getPaymentHistory = async (
-    req: AuthenticatedRequest,
-    res: Response
-  ) => {
-    try {
-      const userId = req.user._id;
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  try {
+    const userId = req.user!._id;
 
-      const payments =
-        await this.paymentService.getPaymentHistory(
-          userId
-        );
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
 
-      return res.status(200).json({
-        success: true,
-        message: "Payment history fetched successfully.",
-        data: payments,
-      });
-    } catch (error: any) {
-      return res.status(500).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  };
+    const result =
+      await this.paymentService.getPaymentHistory(
+        userId,
+        page,
+        limit
+      );
 
+    return res.status(200).json({
+      success: true,
+      message: "Payment history fetched successfully.",
+      data: result.data,
+      pagination: result.pagination,
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
   /**
    * Get Payment Details
    */
