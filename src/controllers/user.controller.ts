@@ -41,7 +41,11 @@ export const getProfile = async (
   try {
     const userId = (req as any).user.id;
 
-    const user = await User.findById(userId);
+    // const user = await User.findById(userId);
+
+    const user = await User.findById(userId).select(
+  "name email mobile language address profileImage onboardingCompleted userId role createdAt updatedAt"
+);
 
     return res.status(200).json({
       success: true,

@@ -43,22 +43,56 @@ export const uploadVehicleDocument =
     }
   };
 
-  export const getVehicleDocuments = async (
+//   export const getVehicleDocuments = async (
+//   req: Request,
+//   res: Response
+// ) => {
+//   try {
+//     const userId = (req as any).user.id;
+
+//     const documents = await getVehicleDocumentsService(userId);
+
+//     return res.status(200).json({
+//       success: true,
+//       message: "Vehicle documents fetched successfully",
+//       data: documents,
+//     });
+//   } catch (error: any) {
+//     return res.status(400).json({
+//       success: false,
+//       message: error.message,
+//     });
+//   }
+// };
+
+export const getVehicleDocuments = async (
   req: Request,
   res: Response
 ) => {
   try {
     const userId = (req as any).user.id;
 
-    const documents = await getVehicleDocumentsService(userId);
+    const page =
+      Number(req.query.page) || 1;
+
+    const limit =
+      Number(req.query.limit) || 10;
+
+    const result =
+      await getVehicleDocumentsService(
+        userId,
+        page,
+        limit
+      );
 
     return res.status(200).json({
       success: true,
       message: "Vehicle documents fetched successfully",
-      data: documents,
+      data: result.data,
+      pagination: result.pagination,
     });
   } catch (error: any) {
-    return res.status(400).json({
+    return res.status(500).json({
       success: false,
       message: error.message,
     });

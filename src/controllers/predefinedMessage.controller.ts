@@ -33,6 +33,28 @@ export const addPredefinedMessage = async (
   }
 };
 
+// export const getPredefinedMessages = async (
+//   req: Request,
+//   res: Response
+// ) => {
+//   try {
+//     const userId = (req as any).user.id;
+
+//     const data =
+//       await getPredefinedMessagesService(userId);
+
+//     return res.status(200).json({
+//       success: true,
+//       data,
+//     });
+//   } catch (error: any) {
+//     return res.status(400).json({
+//       success: false,
+//       message: error.message,
+//     });
+//   }
+// };
+
 export const getPredefinedMessages = async (
   req: Request,
   res: Response
@@ -40,15 +62,26 @@ export const getPredefinedMessages = async (
   try {
     const userId = (req as any).user.id;
 
-    const data =
-      await getPredefinedMessagesService(userId);
+    const page =
+      Number(req.query.page) || 1;
+
+    const limit =
+      Number(req.query.limit) || 10;
+
+    const result =
+      await getPredefinedMessagesService(
+        userId,
+        page,
+        limit
+      );
 
     return res.status(200).json({
       success: true,
-      data,
+      data: result.data,
+      pagination: result.pagination,
     });
   } catch (error: any) {
-    return res.status(400).json({
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
