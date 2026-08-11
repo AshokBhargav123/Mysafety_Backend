@@ -1,4 +1,5 @@
 import LostFound from "../models/LostFound";
+import { paginate } from "../utils/pagination";
 
 export const addLostFoundItemService = async (
   userId: string,
@@ -35,11 +36,32 @@ export const addLostFoundItemService = async (
   return item;
 };
 
+// export const getLostFoundItemsService = async (
+//   userId: string
+// ) => {
+//   return await LostFound.find({ userId })
+//     .sort({ createdAt: -1 });
+// };
+
 export const getLostFoundItemsService = async (
-  userId: string
+  userId: string,
+  page: number,
+  limit: number
 ) => {
-  return await LostFound.find({ userId })
-    .sort({ createdAt: -1 });
+  return await paginate(
+    LostFound,
+    {
+      userId,
+    },
+    {
+      page,
+      limit,
+
+      sort: {
+        createdAt: -1,
+      },
+    }
+  );
 };
 
 export const getLostFoundItemByIdService = async (

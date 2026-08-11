@@ -31,5 +31,19 @@ export const completeProfileService = async (
 
   await user.save();
 
-  return user;
+  // return user;
+  return {
+  _id: user._id,
+  mobile: user.mobile,
+  name: user.name,
+  email: user.email,
+  language: user.language,
+  address: user.address,
+  onboardingCompleted: user.onboardingCompleted,
+  userId: user.userId,
+  role: user.role,
+  profileImage: user.profileImage,
+  createdAt: user.createdAt,
+  updatedAt: user.updatedAt,
+};
 };

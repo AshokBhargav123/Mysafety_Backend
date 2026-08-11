@@ -3,6 +3,7 @@ import VehicleDocument from "../models/VehicleDocument";
 import {
   VehicleDocumentCategory,
 } from "../constants/vehicleDocument";
+import { paginate } from "../utils/pagination";
 
 export const uploadVehicleDocumentService =
   async (
@@ -54,10 +55,36 @@ export const uploadVehicleDocumentService =
     return document;
   };
 
-  export const getVehicleDocumentsService = async (userId: string) => {
-  return await VehicleDocument.find({ userId })
-    .populate("vehicleId", "vehicleNumber")
-    .sort({ createdAt: -1 });
+//   export const getVehicleDocumentsService = async (userId: string) => {
+//   return await VehicleDocument.find({ userId })
+//     .populate("vehicleId", "vehicleNumber")
+//     .sort({ createdAt: -1 });
+// };
+
+export const getVehicleDocumentsService = async (
+  userId: string,
+  page: number,
+  limit: number
+) => {
+  return await paginate(
+    VehicleDocument,
+    {
+      userId,
+    },
+    {
+      page,
+      limit,
+
+      sort: {
+        createdAt: -1,
+      },
+
+      populate: {
+        path: "vehicleId",
+        select: "vehicleNumber",
+      },
+    }
+  );
 };
 
 export const updateVehicleDocumentService = async (

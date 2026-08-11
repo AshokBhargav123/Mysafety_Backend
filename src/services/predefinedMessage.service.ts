@@ -1,4 +1,5 @@
 import PredefinedMessage from "../models/PredefinedMessage";
+import { paginate } from "../utils/pagination";
 
 export const addPredefinedMessageService = async (
   userId: string,
@@ -21,12 +22,33 @@ export const addPredefinedMessageService = async (
   });
 };
 
+// export const getPredefinedMessagesService = async (
+//   userId: string
+// ) => {
+//   return await PredefinedMessage.find({ userId }).sort({
+//     createdAt: -1,
+//   });
+// };
+
 export const getPredefinedMessagesService = async (
-  userId: string
+  userId: string,
+  page: number,
+  limit: number
 ) => {
-  return await PredefinedMessage.find({ userId }).sort({
-    createdAt: -1,
-  });
+  return await paginate(
+    PredefinedMessage,
+    {
+      userId,
+    },
+    {
+      page,
+      limit,
+
+      sort: {
+        createdAt: -1,
+      },
+    }
+  );
 };
 
 export const getPredefinedMessageByIdService = async (
