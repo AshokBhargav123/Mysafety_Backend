@@ -26,21 +26,55 @@ export const addDriverService = async (
 };
 
 // export const getDriversService = async (
-//   userId: string
+//   userId: string,
+//   page: number,
+//   limit: number
 // ) => {
-//   return Driver.find({ userId });
+//   return await paginate(
+//     Driver,
+//     {
+//       userId,
+//     },
+//     {
+//       page,
+//       limit,
+
+//       sort: {
+//         createdAt: -1,
+//       },
+
+//       select:
+//         "name mobile licenseNumber licenseFile createdAt updatedAt",
+//     }
+//   );
 // };
 
 export const getDriversService = async (
   userId: string,
   page: number,
-  limit: number
+  limit: number,
+  search?: string
 ) => {
+  const filter: any = {
+    userId,
+  };
+
+  if (search?.trim()) {
+    const searchRegex = new RegExp(
+      search.trim(),
+      "i"
+    );
+
+    filter.$or = [
+      { name: searchRegex },
+      { mobile: searchRegex },
+      { licenseNumber: searchRegex },
+    ];
+  }
+
   return await paginate(
     Driver,
-    {
-      userId,
-    },
+    filter,
     {
       page,
       limit,

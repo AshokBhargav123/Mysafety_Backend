@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import { PaymentService } from "../services/payment.service";
 import { AuthenticatedRequest } from "../middlewares/auth.middleware";
+import {
+  IPayment
+} from "../models/payment.model";
 
 export class PaymentController {
   private paymentService = new PaymentService();
@@ -89,31 +92,6 @@ export class PaymentController {
   /**
    * Get Payment History
    */
-  // getPaymentHistory = async (
-  //   req: AuthenticatedRequest,
-  //   res: Response
-  // ) => {
-  //   try {
-  //     const userId = req.user._id;
-
-  //     const payments =
-  //       await this.paymentService.getPaymentHistory(
-  //         userId
-  //       );
-
-  //     return res.status(200).json({
-  //       success: true,
-  //       message: "Payment history fetched successfully.",
-  //       data: payments,
-  //     });
-  //   } catch (error: any) {
-  //     return res.status(500).json({
-  //       success: false,
-  //       message: error.message,
-  //     });
-  //   }
-  // };
-
   getPaymentHistory = async (
   req: AuthenticatedRequest,
   res: Response
@@ -121,15 +99,40 @@ export class PaymentController {
   try {
     const userId = req.user!._id;
 
-    const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 10;
+    // const page = Number(req.query.page) || 1;
+    // const limit = Number(req.query.limit) || 10;
 
-    const result =
-      await this.paymentService.getPaymentHistory(
-        userId,
-        page,
-        limit
-      );
+    // const result =
+    //   await this.paymentService.getPaymentHistory(
+    //     userId,
+    //     page,
+    //     limit
+    //   );
+
+    const page =
+  Number(req.query.page) || 1;
+
+const limit =
+  Number(req.query.limit) || 10;
+
+const status =
+  req.query.status as IPayment["status"] | undefined;
+
+const fromDate =
+  req.query.fromDate as string | undefined;
+
+const toDate =
+  req.query.toDate as string | undefined;
+
+const result =
+  await this.paymentService.getPaymentHistory(
+    userId,
+    page,
+    limit,
+    status,
+    fromDate,
+    toDate
+  );
 
     return res.status(200).json({
       success: true,
@@ -144,6 +147,7 @@ export class PaymentController {
     });
   }
 };
+
   /**
    * Get Payment Details
    */
