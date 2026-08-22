@@ -50,29 +50,6 @@ export const addDriver = async (
 }
 };
 
-// export const getDrivers = async (
-//   req: Request,
-//   res: Response
-// ) => {
-//   try {
-//     const userId = (req as any).user.id;
-
-//     const data =
-//       await getDriversService(userId);
-
-//     return res.status(200).json({
-//       success: true,
-//       message: "driver_list",
-//       data,
-//     });
-//   } catch (error: any) {
-//     return res.status(400).json({
-//       success: false,
-//       message: error.message,
-//     });
-//   }
-// };
-
 export const getDrivers = async (
   req: Request,
   res: Response
@@ -86,12 +63,23 @@ export const getDrivers = async (
     const limit =
       Number(req.query.limit) || 10;
 
-    const result =
-      await getDriversService(
-        userId,
-        page,
-        limit
-      );
+    // const result =
+    //   await getDriversService(
+    //     userId,
+    //     page,
+    //     limit
+    //   );
+
+    const search =
+  req.query.search as string | undefined;
+
+const result =
+  await getDriversService(
+    userId,
+    page,
+    limit,
+    search
+  );
 
     return res.status(200).json({
       success: true,

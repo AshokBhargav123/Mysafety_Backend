@@ -124,33 +124,39 @@ export const createManualVehicleService = async (
   return vehicle;
 };
 
-// export const getVehiclesService = async (
-//   userId: string
-// ) => {
-//   return Vehicle.find({ userId })
-//     .select({
-//       vehicleNumber: 1,
-//       vehicleType: 1,
-//       brand: 1,
-//       model: 1,
-//       vehicleImage: 1,
-//       isManualEntry: 1,
-//       createdAt: 1,
-//       updatedAt: 1,
-//     })
-//     .sort({ createdAt: -1 });
-// };
-
 export const getVehiclesService = async (
   userId: string,
   page: number,
-  limit: number
+  limit: number,
+  search?: string,
+  vehicleType?: string
 ) => {
+  const filter: any = {
+    userId,
+  };
+
+  // Search
+  if (search?.trim()) {
+    const searchRegex = new RegExp(
+      search.trim(),
+      "i"
+    );
+
+    filter.$or = [
+      { vehicleNumber: searchRegex },
+      { brand: searchRegex },
+      { model: searchRegex },
+    ];
+  }
+
+  // Vehicle type filter
+  if (vehicleType) {
+    filter.vehicleType = vehicleType;
+  }
+
   return await paginate(
     Vehicle,
-    {
-      userId,
-    },
+    filter,
     {
       page,
       limit,

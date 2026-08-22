@@ -1,4 +1,4 @@
-import { Payment } from "../models/payment.model";
+import { Payment, IPayment } from "../models/payment.model";
 import { SubscriptionPlan } from "../models/subscriptionPlan.model";
 import { RazorpayService } from "./razorpay.service";
 import { paginate } from "../utils/pagination";
@@ -116,26 +116,96 @@ export class PaymentService {
   /**
    * Payment History
    */
-  // async getPaymentHistory(userId: string) {
-  //   return await Payment.find({
-  //     userId,
-  //   })
-  //     .populate("planId", "name price duration")
-  //     .sort({
-  //       createdAt: -1,
-  //     });
-  // }
+//   async getPaymentHistory(
+//   userId: string,
+//   page: number,
+//   limit: number
+// ) {
+//   return await paginate(
+//     Payment,
+//     {
+//       userId,
+//     },
+//     {
+//       page,
+//       limit,
 
-  async getPaymentHistory(
+//       sort: {
+//         createdAt: -1,
+//       },
+
+//       select:
+//         "planId razorpayOrderId razorpayPaymentId amount currency paymentMethod status paidAt",
+
+//       populate: {
+//         path: "planId",
+//         select: "name price duration",
+//       },
+//     }
+//   );
+// }
+
+async getPaymentHistory(
   userId: string,
   page: number,
-  limit: number
+  limit: number,
+  status?: IPayment["status"],
+  fromDate?: string,
+  toDate?: string
 ) {
+  const filter: any = {
+    userId,
+  };
+
+  // Status filter
+  if (status) {
+    const allowedStatuses = [
+      "created",
+      "pending",
+      "success",
+      "failed",
+      "refunded",
+    ];
+
+    if (!allowedStatuses.includes(status)) {
+      throw new Error("Invalid payment status.");
+    }
+
+    filter.status = status;
+  }
+
+  // Date filter
+  if (fromDate || toDate) {
+    filter.createdAt = {};
+
+    if (fromDate) {
+      const startDate = new Date(fromDate);
+
+      if (isNaN(startDate.getTime())) {
+        throw new Error("Invalid fromDate.");
+      }
+
+      startDate.setHours(0, 0, 0, 0);
+
+      filter.createdAt.$gte = startDate;
+    }
+
+    if (toDate) {
+      const endDate = new Date(toDate);
+
+      if (isNaN(endDate.getTime())) {
+        throw new Error("Invalid toDate.");
+      }
+
+      endDate.setHours(23, 59, 59, 999);
+
+      filter.createdAt.$lte = endDate;
+    }
+  }
+
   return await paginate(
     Payment,
-    {
-      userId,
-    },
+    filter,
     {
       page,
       limit,
