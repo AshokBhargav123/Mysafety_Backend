@@ -14,10 +14,16 @@ export const completeProfileService = async (
   user.email = data.email;
   user.language = data.language;
 
+  /*
+   * Only update profileImage when a new S3
+   * image was uploaded.
+   *
+   * If no new image is provided, the existing
+   * S3 key remains unchanged.
+   */
   if (data.profileImage) {
     user.profileImage = data.profileImage;
   }
-
 
   user.address = {
     fullAddress: data.address?.fullAddress,
@@ -31,19 +37,19 @@ export const completeProfileService = async (
 
   await user.save();
 
-  // return user;
   return {
-  _id: user._id,
-  mobile: user.mobile,
-  name: user.name,
-  email: user.email,
-  language: user.language,
-  address: user.address,
-  onboardingCompleted: user.onboardingCompleted,
-  userId: user.userId,
-  role: user.role,
-  profileImage: user.profileImage,
-  createdAt: user.createdAt,
-  updatedAt: user.updatedAt,
-};
+    _id: user._id,
+    mobile: user.mobile,
+    name: user.name,
+    email: user.email,
+    language: user.language,
+    address: user.address,
+    onboardingCompleted:
+      user.onboardingCompleted,
+    userId: user.userId,
+    role: user.role,
+    profileImage: user.profileImage,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
+  };
 };

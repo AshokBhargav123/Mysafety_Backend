@@ -13,6 +13,7 @@ import lostandFound from "./user/lostFound.routes";
 import subscriptionPlanRoutes from "./user/subscriptionPlan.routes";
 import subscriptionRoutes from "./user/subscription.routes";
 import paymentRoutes from "./user/payment.routes";
+import uploadRoutes from "./upload.routes";
 
 
 const router = Router();
@@ -30,5 +31,7 @@ router.use("/",lostandFound);
 router.use("/subscription-plans", subscriptionPlanRoutes);
 router.use("/subscription", subscriptionRoutes);
 router.use("/payment", paymentRoutes);
+router.use("/upload", uploadRoutes);
+
 
 export default router;

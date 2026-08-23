@@ -1,24 +1,30 @@
 import multer from "multer";
-import path from "path";
-import fs from "fs";
 
-const uploadPath = "uploads/profile";
+const storage = multer.memoryStorage();
 
-if (!fs.existsSync(uploadPath)) {
-  fs.mkdirSync(uploadPath, { recursive: true });
-}
+const upload = multer({
+  storage,
 
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => {
-    cb(null, uploadPath);
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10 MB
   },
 
-  filename: (_req, file, cb) => {
-    const fileName =
-      Date.now() + path.extname(file.originalname);
+  fileFilter: (_req, file, cb) => {
+    const allowedMimeTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/jpg",
+      "image/webp",
+      "application/pdf",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    ];
 
-    cb(null, fileName);
+    if (!allowedMimeTypes.includes(file.mimetype)) {
+      return cb(new Error("unsupported_file_type"));
+    }
+
+    cb(null, true);
   },
 });
 
-export default multer({ storage });
+export default upload;
