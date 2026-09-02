@@ -1,6 +1,7 @@
 import User from "../models/User";
 import FamilyMember from "../models/FamilyMember";
 import { paginate } from "../utils/pagination";
+import { getSignedUrlService } from "./upload.service";
 
 export const addFamilyMemberService = async (
   ownerId: string,
@@ -73,12 +74,38 @@ export const addFamilyMemberService = async (
 //     );
 //   };
 
+// export const getFamilyMembersService = async (
+//   ownerId: string,
+//   page: number,
+//   limit: number
+// ) => {
+//   return await paginate(
+//     FamilyMember,
+//     {
+//       ownerId,
+//     },
+//     {
+//       page,
+//       limit,
+
+//       sort: {
+//         createdAt: -1,
+//       },
+
+//       populate: {
+//         path: "memberId",
+//         select: "name mobile address",
+//       },
+//     }
+//   );
+// };
+
 export const getFamilyMembersService = async (
   ownerId: string,
   page: number,
   limit: number
 ) => {
-  return await paginate(
+  const result = await paginate(
     FamilyMember,
     {
       ownerId,
@@ -93,10 +120,24 @@ export const getFamilyMembersService = async (
 
       populate: {
         path: "memberId",
-        select: "name mobile address",
+        select: "name mobile address profileImage",
       },
     }
   );
+
+  // Convert S3 profile image key to signed URL
+  for (const item of result.data) {
+    const member = item.memberId as any;
+
+    if (member?.profileImage) {
+      member.profileImage =
+        await getSignedUrlService(
+          member.profileImage
+        );
+    }
+  }
+
+  return result;
 };
 
   export const updateFamilyMemberService =

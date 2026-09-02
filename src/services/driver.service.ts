@@ -1,5 +1,8 @@
 import Driver from "../models/Driver";
 import { paginate } from "../utils/pagination";
+import {
+  getSignedUrlService,
+} from "./upload.service";
 
 export const addDriverService = async (
   userId: string,
@@ -72,21 +75,56 @@ export const getDriversService = async (
     ];
   }
 
-  return await paginate(
-    Driver,
-    filter,
-    {
-      page,
-      limit,
+  // return await paginate(
+  //   Driver,
+  //   filter,
+  //   {
+  //     page,
+  //     limit,
 
-      sort: {
-        createdAt: -1,
-      },
+  //     sort: {
+  //       createdAt: -1,
+  //     },
 
-      select:
-        "name mobile licenseNumber licenseFile createdAt updatedAt",
+  //     select:
+  //       "name mobile licenseNumber licenseFile createdAt updatedAt",
+  //   }
+  // );
+
+const result = await paginate(
+  Driver,
+  filter,
+  {
+    page,
+    limit,
+
+    sort: {
+      createdAt: -1,
+    },
+
+    select:
+      "name mobile licenseNumber licenseFile createdAt updatedAt",
+  }
+);
+
+result.data = await Promise.all(
+  result.data.map(async (driver: any) => {
+    const driverData = driver.toObject
+      ? driver.toObject()
+      : driver;
+
+    if (driverData.licenseFile) {
+      driverData.licenseFile =
+        await getSignedUrlService(
+          driverData.licenseFile
+        );
     }
-  );
+
+    return driverData;
+  })
+);
+
+return result;
 };
 
 export const getDriverService = async (
@@ -98,7 +136,18 @@ export const getDriverService = async (
     throw new Error("Driver not found");
   }
 
-  return driver;
+  // return driver;
+
+  const driverData = driver.toObject();
+
+if (driverData.licenseFile) {
+  driverData.licenseFile =
+    await getSignedUrlService(
+      driverData.licenseFile
+    );
+}
+
+return driverData;
 };
 
 export const updateDriverService = async (
@@ -167,5 +216,16 @@ export const getDriverDetailsService = async (
     throw new Error("Driver not found");
   }
 
-  return driver;
+  // return driver;
+
+  const driverData = driver.toObject();
+
+if (driverData.licenseFile) {
+  driverData.licenseFile =
+    await getSignedUrlService(
+      driverData.licenseFile
+    );
+}
+
+return driverData;
 };
