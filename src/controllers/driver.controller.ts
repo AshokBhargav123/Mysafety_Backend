@@ -12,6 +12,12 @@ import {
   getDriverDetailsService,
 } from "../services/driver.service";
 
+import {
+  uploadFileService,
+  getSignedUrlService,
+  deleteFileService,
+} from "../services/upload.service";
+
 export const addDriver = async (
   req: Request,
   res: Response
@@ -19,11 +25,32 @@ export const addDriver = async (
   try {
     const userId = (req as any).user.id;
 
-    const data =
-      await addDriverService(
-        userId,
-        req.body
-      );
+    // const data =
+    //   await addDriverService(
+    //     userId,
+    //     req.body
+    //   );
+
+    let licenseFile: string | undefined;
+
+if (req.file) {
+  const uploadedFile =
+    await uploadFileService(
+      req.file,
+      `drivers/${userId}/licenses`
+    );
+
+  licenseFile = uploadedFile.key;
+}
+
+const data =
+  await addDriverService(
+    userId,
+    {
+      ...req.body,
+      licenseFile,
+    }
+  );
 
     return res.status(201).json({
       success: true,
@@ -124,11 +151,32 @@ export const updateDriver = async (
   try {
     const { id } = req.body;
 
-    const data =
-      await updateDriverService(
-        id,
-        req.body
-      );
+    // const data =
+    //   await updateDriverService(
+    //     id,
+    //     req.body
+    //   );
+
+    let licenseFile: string | undefined;
+
+if (req.file) {
+  const uploadedFile =
+    await uploadFileService(
+      req.file,
+      `drivers/${(req as any).user.id}/licenses`
+    );
+
+  licenseFile = uploadedFile.key;
+}
+
+const data =
+  await updateDriverService(
+    id,
+    {
+      ...req.body,
+      licenseFile,
+    }
+  );
 
     return res.status(200).json({
       success: true,

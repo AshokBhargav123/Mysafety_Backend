@@ -1,6 +1,11 @@
 import Vehicle from "../models/Vehicle";
 import Driver from "../models/Driver";
 import { paginate } from "../utils/pagination";
+import {
+  uploadFileService,
+  getSignedUrlService,
+  deleteFileService,
+} from "./upload.service";
 
 const fetchVehicleFromThirdParty = async (
   vehicleNumber: string
@@ -36,7 +41,8 @@ const fetchVehicleFromThirdParty = async (
 export const fetchVehicleService = async (
   userId: string,
   vehicleNumber: string,
-  regDate?: string
+  regDate?: string,
+  file?: Express.Multer.File
 ) => {
 
   const existingVehicle = await Vehicle.findOne({
@@ -54,9 +60,21 @@ export const fetchVehicleService = async (
   vehicleNumber
 );
 
+let vehicleImage: string | undefined;
+
+if (file) {
+  const uploadedFile = await uploadFileService(
+    file,
+    `vehicles/${userId}`
+  );
+
+  vehicleImage = uploadedFile.key;
+}
+
    const vehicle = await Vehicle.create({
     userId,
     ...vehicleData,
+    vehicleImage,
     vehicleNumber: vehicleNumber.trim().toUpperCase(),
     registrationDate:
       regDate || vehicleData.registrationDate,
@@ -69,16 +87,45 @@ export const deleteVehicleService = async (
   userId: string,
   vehicleId: string
 ) => {
-  const vehicle = await Vehicle.findOneAndDelete({
-    _id: vehicleId,
-    userId,
-  });
+  // const vehicle = await Vehicle.findOneAndDelete({
+  //   _id: vehicleId,
+  //   userId,
+  // });
 
-  if (!vehicle) {
-    throw new Error("Vehicle not found");
+  // if (!vehicle) {
+  //   throw new Error("Vehicle not found");
+  // }
+
+  // return true;
+
+  const vehicle = await Vehicle.findOne({
+  _id: vehicleId,
+  userId,
+});
+
+if (!vehicle) {
+  throw new Error("Vehicle not found");
+}
+
+const vehicleImage = vehicle.vehicleImage;
+
+await Vehicle.deleteOne({
+  _id: vehicleId,
+  userId,
+});
+
+if (vehicleImage) {
+  try {
+    await deleteFileService(vehicleImage);
+  } catch (error) {
+    console.error(
+      "Failed to delete vehicle image from S3:",
+      error
+    );
   }
+}
 
-  return true;
+return true;
 };
 
 export const getVehicleDetailsService = async (
@@ -94,12 +141,23 @@ export const getVehicleDetailsService = async (
     throw new Error("Vehicle not found");
   }
 
-  return vehicle;
+  const vehicleData = vehicle.toObject();
+
+if (vehicleData.vehicleImage) {
+  vehicleData.vehicleImage =
+    await getSignedUrlService(
+      vehicleData.vehicleImage
+    );
+}
+
+return vehicleData;
+
 };
 
 export const createManualVehicleService = async (
   userId: string,
-  data: any
+  data: any,
+  file?: Express.Multer.File
 ) => {
   const existingVehicle = await Vehicle.findOne({
     vehicleNumber: data.vehicleNumber
@@ -111,12 +169,24 @@ export const createManualVehicleService = async (
     throw new Error("Vehicle already exists");
   }
 
+  let vehicleImage: string | undefined;
+
+if (file) {
+  const uploadedFile = await uploadFileService(
+    file,
+    `vehicles/${userId}`
+  );
+
+  vehicleImage = uploadedFile.key;
+}
+
   const vehicle = await Vehicle.create({
     userId,
     vehicleNumber: data.vehicleNumber
       .trim()
       .toUpperCase(),
     model: data.model,
+    vehicleImage,
     vehicleType: data.vehicleType,
     isManualEntry: true,
   });
@@ -154,21 +224,57 @@ export const getVehiclesService = async (
     filter.vehicleType = vehicleType;
   }
 
-  return await paginate(
-    Vehicle,
-    filter,
-    {
-      page,
-      limit,
+  // return await paginate(
+  //   Vehicle,
+  //   filter,
+  //   {
+  //     page,
+  //     limit,
 
-      sort: {
-        createdAt: -1,
-      },
+  //     sort: {
+  //       createdAt: -1,
+  //     },
 
-      select:
-        "vehicleNumber vehicleType brand model vehicleImage isManualEntry createdAt updatedAt",
+  //     select:
+  //       "vehicleNumber vehicleType brand model vehicleImage isManualEntry createdAt updatedAt",
+  //   }
+  // );
+
+  const result = await paginate(
+  Vehicle,
+  filter,
+  {
+    page,
+    limit,
+
+    sort: {
+      createdAt: -1,
+    },
+
+    select:
+      "vehicleNumber vehicleType brand model vehicleImage isManualEntry createdAt updatedAt",
+  }
+);
+
+result.data = await Promise.all(
+  result.data.map(async (vehicle: any) => {
+    const vehicleData = vehicle.toObject
+      ? vehicle.toObject()
+      : vehicle;
+
+    if (vehicleData.vehicleImage) {
+      vehicleData.vehicleImage =
+        await getSignedUrlService(
+          vehicleData.vehicleImage
+        );
     }
-  );
+
+    return vehicleData;
+  })
+);
+
+return result;
+
 };
 
 export const assignDriverService = async (

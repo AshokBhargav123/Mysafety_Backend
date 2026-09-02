@@ -24,7 +24,8 @@ export const fetchVehicle = async (
     const vehicle = await fetchVehicleService(
       userId,
       vehicleNumber,
-      regDate
+      regDate,
+      req.file
     );
 
     return res.status(200).json({
@@ -102,7 +103,8 @@ export const createManualVehicle = async (
     const vehicle =
       await createManualVehicleService(
         userId,
-        req.body
+        req.body,
+        req.file
       );
 
    return res.status(201).json({
@@ -113,6 +115,7 @@ export const createManualVehicle = async (
     vehicleNumber: vehicle.vehicleNumber,
     model: vehicle.model,
     vehicleType: vehicle.vehicleType,
+    vehicleImage: vehicle.vehicleImage,
     isManualEntry: vehicle.isManualEntry,
      createdAt: vehicle.createdAt,
   updatedAt: vehicle.updatedAt,

@@ -8,6 +8,7 @@ import {
   deleteDriver,
   getDriverDetails,
 } from "../../controllers/driver.controller";
+import upload from "../../middlewares/upload.middleware";
 
 import { authMiddleware } from "../../middlewares/auth.middleware";
 
@@ -16,6 +17,7 @@ const router = Router();
 router.post(
   "/drivers",
   authMiddleware,
+  upload.single("licenseFile"),
   addDriver
 );
 
@@ -34,6 +36,7 @@ router.get(
 router.patch(
   "/drivers",
   authMiddleware,
+  upload.single("licenseFile"),
   updateDriver
 );
 
